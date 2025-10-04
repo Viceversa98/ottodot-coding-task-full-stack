@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../../../../lib/supabaseClient'
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export async function POST(request: NextRequest) {
   try {
     const { session_id, user_answer } = await request.json()
 
-    if (!session_id || user_answer === undefined) {
+    // Validate input
+    if (!session_id || user_answer === undefined || user_answer === null) {
       return NextResponse.json(
-        { success: false, error: 'Session ID and user answer are required' },
+        { success: false, error: 'Missing session_id or user_answer' },
         { status: 400 }
       )
     }
@@ -33,27 +30,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const correctAnswer = sessionData.correct_answer
-    const userAnswerNum = parseFloat(user_answer)
-    const isCorrect = Math.abs(userAnswerNum - correctAnswer) < 0.01 // Allow for small floating point differences
+    // Check if the answer is correct
+    const isCorrect = parseFloat(user_answer) === sessionData.correct_answer
 
-    // Generate personalized feedback using Gemini AI
+    // Generate personalized feedback using AI
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
     
-    const feedbackPrompt = `You are a helpful and encouraging math tutor for Primary 5 students (ages 10-11). Generate personalized feedback for a student's answer to a math word problem.
+    const feedbackPrompt = `
+You are a helpful math tutor for Primary 5 students (ages 10-11). Generate personalized feedback for a student's answer to a math word problem.
 
 Problem: "${sessionData.problem_text}"
-Correct Answer: ${correctAnswer}
+Correct Answer: ${sessionData.correct_answer}
 Student's Answer: ${user_answer}
 Is Correct: ${isCorrect}
 
-Requirements for feedback:
-- Be encouraging and supportive regardless of whether the answer is correct
-- If correct: Congratulate them and briefly explain why their answer is right
-- If incorrect: Be gentle and helpful, explain the correct approach without giving away the answer
-- Use age-appropriate language
-- Keep it concise (2-3 sentences)
-- Be positive and motivating
+Generate encouraging, educational feedback that:
+- Acknowledges the student's effort
+- If correct: Celebrates their success and explains why their answer is right
+- If incorrect: Gently explains the mistake and guides them toward the correct approach
+- Uses age-appropriate language
+- Is supportive and motivating
+- Keeps the feedback concise (2-3 sentences)
 
 Return only the feedback text, no additional formatting or explanations.`
 
@@ -61,12 +58,12 @@ Return only the feedback text, no additional formatting or explanations.`
     const response = await result.response
     const feedbackText = response.text().trim()
 
-    // Save the submission to database
+    // Save the submission to the database
     const { data: submissionData, error: submissionError } = await supabase
       .from('math_problem_submissions')
       .insert({
         session_id: session_id,
-        user_answer: userAnswerNum,
+        user_answer: parseFloat(user_answer),
         is_correct: isCorrect,
         feedback_text: feedbackText
       })
@@ -78,15 +75,18 @@ Return only the feedback text, no additional formatting or explanations.`
       throw new Error('Failed to save submission to database')
     }
 
+    // Return the feedback and correctness
     return NextResponse.json({
       success: true,
       is_correct: isCorrect,
       feedback: feedbackText,
-      correct_answer: correctAnswer
+      correct_answer: sessionData.correct_answer,
+      hint: sessionData.hint || '',
+      step_explanation: sessionData.step_explanation || ''
     })
 
   } catch (error) {
-    console.error('Error processing submission:', error)
+    console.error('Error processing answer submission:', error)
     return NextResponse.json(
       { 
         success: false, 

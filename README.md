@@ -106,12 +106,12 @@ Create a new API route that handles:
 ### 3. Requirements Checklist
 
 - [ ] AI generates appropriate Primary 5 level math problems
-- [ ] Problems and answers are saved to Supabase
-- [ ] User submissions are saved with feedback
-- [ ] AI generates helpful, personalized feedback
-- [ ] UI is clean and mobile-responsive
-- [ ] Error handling for API failures
-- [ ] Loading states during API calls
+- [/ ] Problems and answers are saved to Supabase
+- [/ ] User submissions are saved with feedback
+- [/ ] AI generates helpful, personalized feedback
+- [/ ] UI is clean and mobile-responsive
+- [/ ] Error handling for API failures
+- [ /] Loading states during API calls
 
 ## Deployment
 
