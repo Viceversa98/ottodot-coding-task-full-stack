@@ -48,7 +48,7 @@ export default function Home() {
       setTimeout(() => setLoadingMessage('Asking AI to generate a problem...'), 500)
       setTimeout(() => setLoadingMessage('Saving to database...'), 1500)
       
-      const response = await fetch('/api/math-problem', {
+      const response = await fetch('/api/math-problem/simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
