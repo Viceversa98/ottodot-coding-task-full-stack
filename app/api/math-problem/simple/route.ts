@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '../../../../lib/supabaseClient'
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,10 +74,37 @@ export async function POST(request: NextRequest) {
       problem = difficultyProblems[availableTypes[0]]
     }
 
+    // Save the problem to the database
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('math_problem_sessions')
+      .insert({
+        problem_text: problem.problem_text,
+        correct_answer: problem.final_answer,
+        difficulty: difficulty,
+        problem_type: problemType,
+        hint: problem.hint || '',
+        step_explanation: problem.step_explanation || '',
+        syllabus_topic: problem.syllabus_topic || '',
+        learning_objective: problem.learning_objective || '',
+        source: 'simple_generator'
+      })
+      .select()
+      .single()
+
+    if (sessionError) {
+      console.error('Database error:', sessionError)
+      // Fallback to random session ID if database fails
+      return NextResponse.json({
+        success: true,
+        problem: problem,
+        session_id: Math.floor(Math.random() * 1000000)
+      })
+    }
+
     return NextResponse.json({
       success: true,
       problem: problem,
-      session_id: Math.floor(Math.random() * 1000000) // Simple session ID
+      session_id: sessionData.id
     })
 
   } catch (error) {
