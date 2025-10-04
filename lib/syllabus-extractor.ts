@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import pdf from 'pdf-parse'
 
 interface SyllabusContent {
   text: string
@@ -46,6 +45,9 @@ export const extractSyllabusContent = async (): Promise<string> => {
 
     console.log('Extracting syllabus content from PDF...')
     const dataBuffer = fs.readFileSync(pdfPath)
+    
+    // Dynamically import pdf-parse to avoid build-time issues
+    const { default: pdf } = await import('pdf-parse')
     const data = await pdf(dataBuffer)
     
     // Clean and process the text
