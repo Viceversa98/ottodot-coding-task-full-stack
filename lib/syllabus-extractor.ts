@@ -81,13 +81,24 @@ export const extractSyllabusContent = async (): Promise<string> => {
 }
 
 export const getSyllabusContent = async (): Promise<string> => {
+  // Check if we're in a build environment where file system access might be limited
+  const isBuildTime = process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV
+  
+  if (isBuildTime) {
+    console.log('Build time detected, using fallback syllabus content')
+    return getFallbackSyllabusContent()
+  }
+  
   try {
     return await extractSyllabusContent()
   } catch (error) {
     console.error('Failed to get syllabus content:', error)
-    
-    // Return a basic fallback syllabus structure
-    return `
+    return getFallbackSyllabusContent()
+  }
+}
+
+const getFallbackSyllabusContent = (): string => {
+  return `
     PRIMARY MATHEMATICS SYLLABUS (P1 to P6)
     
     PRIMARY 5 (Ages 10-11) MATHEMATICS STANDARDS:
@@ -123,5 +134,4 @@ export const getSyllabusContent = async (): Promise<string> => {
     - Multiple solution methods encouraged
     - Emphasis on understanding over memorization
     `
-  }
 }
