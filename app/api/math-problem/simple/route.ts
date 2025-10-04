@@ -62,7 +62,16 @@ export async function POST(request: NextRequest) {
 
     // Get a random problem based on difficulty and type
     const difficultyProblems = problems[difficulty as keyof typeof problems] || problems.medium
-    const problem = difficultyProblems[problemType as keyof typeof difficultyProblems] || difficultyProblems.addition || difficultyProblems.mixed
+    
+    // Get the specific problem type, with proper fallbacks
+    let problem
+    if (problemType in difficultyProblems) {
+      problem = difficultyProblems[problemType as keyof typeof difficultyProblems]
+    } else {
+      // Fallback to the first available problem type in this difficulty
+      const availableTypes = Object.keys(difficultyProblems) as Array<keyof typeof difficultyProblems>
+      problem = difficultyProblems[availableTypes[0]]
+    }
 
     return NextResponse.json({
       success: true,
