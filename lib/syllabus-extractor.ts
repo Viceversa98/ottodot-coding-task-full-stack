@@ -11,6 +11,14 @@ interface SyllabusContent {
 const SYLLABUS_CACHE_FILE = path.join(process.cwd(), 'data', 'syllabus-content.json')
 
 export const extractSyllabusContent = async (): Promise<string> => {
+  // Check if we're in a build environment
+  const isBuildTime = process.env.NODE_ENV === 'production' && (process.env.VERCEL_ENV || process.env.NEXT_PHASE === 'phase-production-build')
+  
+  if (isBuildTime) {
+    console.log('Build time detected, skipping PDF extraction')
+    return getFallbackSyllabusContent()
+  }
+
   try {
     // Check if we already have cached content
     if (fs.existsSync(SYLLABUS_CACHE_FILE)) {
@@ -76,13 +84,13 @@ export const extractSyllabusContent = async (): Promise<string> => {
       return cachedContent.text
     }
     
-    throw error
+    return getFallbackSyllabusContent()
   }
 }
 
 export const getSyllabusContent = async (): Promise<string> => {
   // Check if we're in a build environment where file system access might be limited
-  const isBuildTime = process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV
+  const isBuildTime = process.env.NODE_ENV === 'production' && (process.env.VERCEL_ENV || process.env.NEXT_PHASE === 'phase-production-build')
   
   if (isBuildTime) {
     console.log('Build time detected, using fallback syllabus content')
