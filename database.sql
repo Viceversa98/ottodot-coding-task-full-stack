@@ -3,7 +3,11 @@ CREATE TABLE IF NOT EXISTS math_problem_sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     problem_text TEXT NOT NULL,
-    correct_answer NUMERIC NOT NULL
+    correct_answer NUMERIC NOT NULL,
+    difficulty VARCHAR(20) DEFAULT 'medium',
+    problem_type VARCHAR(20) DEFAULT 'mixed',
+    hint TEXT DEFAULT '',
+    step_explanation TEXT DEFAULT ''
 );
 
 -- Create math_problem_submissions table
