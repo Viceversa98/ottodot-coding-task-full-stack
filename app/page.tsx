@@ -16,16 +16,72 @@ export default function Home() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
 
   const generateProblem = async () => {
-    // TODO: Implement problem generation logic
-    // This should call your API route to generate a new problem
-    // and save it to the database
+    setIsLoading(true)
+    setFeedback('')
+    setIsCorrect(null)
+    setUserAnswer('')
+    
+    try {
+      const response = await fetch('/api/math-problem', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setProblem(data.problem)
+        setSessionId(data.session_id)
+      } else {
+        throw new Error(data.error || 'Failed to generate problem')
+      }
+    } catch (error) {
+      console.error('Error generating problem:', error)
+      setFeedback('Sorry, there was an error generating the problem. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const submitAnswer = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement answer submission logic
-    // This should call your API route to check the answer,
-    // save the submission, and generate feedback
+    
+    if (!sessionId || !userAnswer) {
+      setFeedback('Please enter an answer before submitting.')
+      return
+    }
+
+    setIsLoading(true)
+    
+    try {
+      const response = await fetch('/api/math-problem/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          user_answer: Number(userAnswer)
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setIsCorrect(data.is_correct)
+        setFeedback(data.feedback)
+      } else {
+        throw new Error(data.error || 'Failed to submit answer')
+      }
+    } catch (error) {
+      console.error('Error submitting answer:', error)
+      setFeedback('Sorry, there was an error submitting your answer. Please try again.')
+      setIsCorrect(false)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -80,11 +136,18 @@ export default function Home() {
         )}
 
         {feedback && (
-          <div className={`rounded-lg shadow-lg p-6 ${isCorrect ? 'bg-green-50 border-2 border-green-200' : 'bg-yellow-50 border-2 border-yellow-200'}`}>
+          <div className={`rounded-lg shadow-lg p-6 mb-6 ${isCorrect ? 'bg-green-50 border-2 border-green-200' : 'bg-yellow-50 border-2 border-yellow-200'}`}>
             <h2 className="text-xl font-semibold mb-4 text-gray-700">
               {isCorrect ? '✅ Correct!' : '❌ Not quite right'}
             </h2>
-            <p className="text-gray-800 leading-relaxed">{feedback}</p>
+            <p className="text-gray-800 leading-relaxed mb-4">{feedback}</p>
+            <button
+              onClick={generateProblem}
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              {isLoading ? 'Generating...' : 'Try Another Problem'}
+            </button>
           </div>
         )}
       </main>
