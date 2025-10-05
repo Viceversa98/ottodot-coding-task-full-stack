@@ -105,7 +105,7 @@ Create a new API route that handles:
 
 ### 3. Requirements Checklist
 
-- [ ] AI generates appropriate Primary 5 level math problems
+- [ /] AI generates appropriate Primary 5 level math problems
 - [/ ] Problems and answers are saved to Supabase
 - [/ ] User submissions are saved with feedback
 - [/ ] AI generates helpful, personalized feedback
@@ -148,11 +148,11 @@ When submitting your assessment, provide:
 
 If you have time, consider adding:
 
-- [ ] Difficulty levels (Easy/Medium/Hard)
-- [ ] Problem history view
-- [ ] Score tracking
-- [ ] Different problem types (addition, subtraction, multiplication, division)
-- [ ] Hints system
+- [ /] Difficulty levels (Easy/Medium/Hard)
+- [ /] Problem history view
+- [/ ] Score tracking
+- [/ ] Different problem types (addition, subtraction, multiplication, division)
+- [ /] Hints system
 - [ ] Step-by-step solution explanations
 
 ---
