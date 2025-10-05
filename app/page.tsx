@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
 import { Navbar } from '@/components/navbar'
 
 interface MathProblem {
@@ -14,6 +15,7 @@ interface MathProblem {
 }
 
 export default function Home() {
+  const { theme } = useTheme()
   const [problem, setProblem] = useState<MathProblem | null>(null)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState('')
@@ -294,7 +296,10 @@ export default function Home() {
           <button
             onClick={generateProblem}
             disabled={isLoading}
-            className="w-full bg-purple-200 hover:bg-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 text-black dark:text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 min-h-[56px] text-lg shadow-lg"
+            className="w-full bg-purple-200 hover:bg-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 text-black dark:text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 min-h-[56px] text-lg shadow-lg dark:shadow-2xl dark:shadow-purple-900/50 hover:shadow-xl dark:hover:shadow-purple-800/60 border-2"
+            style={{
+              borderColor: theme === 'dark' ? '#ffffff' : 'rgb(196 181 253)',
+            }}
           >
             {isGenerating ? (
               <div className="flex items-center justify-center space-x-3">
@@ -316,7 +321,12 @@ export default function Home() {
 
             {/* Syllabus Information */}
             {(problem.syllabus_topic || problem.learning_objective || problem.primary_level) && (
-              <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 border border-blue-200 dark:border-blue-700 rounded-lg">
+              <div 
+                className="mb-4 p-3 border border-blue-200 dark:border-blue-700 rounded-lg"
+                style={{
+                  background: theme === 'dark' ? '#1e3a8a' : 'linear-gradient(to right, #eff6ff, #faf5ff)'
+                }}
+              >
                 <div className="flex items-center space-x-2 mb-1">
                   <span className="text-blue-600 dark:text-blue-400">📚</span>
                   <span className="text-sm font-semibold text-blue-800 dark:text-blue-200">
@@ -365,9 +375,9 @@ export default function Home() {
 
             {/* Hint Display */}
             {showHint && hint && (
-              <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-700 rounded-lg border border-yellow-200 dark:border-yellow-500">
-                <h3 className="font-semibold text-yellow-800 dark:text-yellow-50 mb-2">💡 Hint:</h3>
-                <p className="text-yellow-700 dark:text-yellow-50">{hint}</p>
+              <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-200 rounded-lg border border-yellow-200 dark:border-yellow-500">
+                <h3 className="font-semibold text-yellow-800 mb-2" style={{color: theme === 'dark' ? '#000000' : '#92400e'}}>💡 Hint:</h3>
+                <p style={{color: theme === 'dark' ? '#000000' : '#a16207'}}>{hint}</p>
               </div>
             )}
             
@@ -425,11 +435,12 @@ export default function Home() {
                 {isCorrect ? 'Excellent Work!' : 'Keep Trying!'}
               </h2>
             </div>
-            <p className={`text-base ${
-              isCorrect 
-                ? 'text-green-700 dark:text-green-50' 
-                : 'text-yellow-700 dark:text-yellow-50'
-            }`}>
+            <p 
+              className="text-base"
+              style={{
+                color: theme === 'dark' ? '#000000' : (isCorrect ? '#15803d' : '#a16207')
+              }}
+            >
               {feedback}
             </p>
 

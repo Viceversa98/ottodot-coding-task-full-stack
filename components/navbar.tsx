@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { ThemeToggle } from './theme-toggle'
+import { Menu, X } from 'lucide-react'
 
 export function Navbar() {
   const pathname = usePathname()
@@ -52,22 +53,22 @@ export function Navbar() {
       {/* Floating Menu Button */}
       <button
         onClick={toggleSidebar}
-        className="fixed z-40 p-3 bg-white dark:bg-purple-600 hover:bg-gray-100 dark:hover:bg-purple-700 text-black dark:text-white rounded-full shadow-lg transition-colors group border border-gray-200 dark:border-purple-500"
+        className="fixed z-40 p-3 bg-white dark:bg-purple-600 hover:bg-gray-100 dark:hover:bg-purple-700 text-black dark:text-white rounded-full shadow-lg transition-all duration-200 group border border-gray-200 dark:border-purple-500 hover:shadow-xl"
         style={{
           bottom: '1rem',
           left: '1rem'
         }}
-        title="Open Menu"
+        title={isSidebarOpen ? "Close Menu" : "Open Menu"}
+        aria-label={isSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
       >
         {isSidebarOpen ? (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <X className="w-6 h-6" />
         ) : (
           <div className="flex items-center space-x-2">
-            <span className="text-lg">🧮</span>
-            <span className="text-sm font-semibold hidden group-hover:block transition-all duration-200 text-black dark:text-white">
-              Math
+            <Menu className="w-6 h-6" style={{color: '#000000'}} />
+            {/* Menu text that appears on hover */}
+            <span className="text-sm font-semibold hidden group-hover:block transition-all duration-200 text-black dark:text-black whitespace-nowrap">
+              Menu
             </span>
           </div>
         )}
