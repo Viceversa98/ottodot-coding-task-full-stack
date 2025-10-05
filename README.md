@@ -1,5 +1,10 @@
 # Math Problem Generator - Developer Assessment Starter Kit
 
+
+NEXT_PUBLIC_SUPABASE_URL=https://dnrcfbjhwlvqdxilhros.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucmNmYmpod2x2cWR4aWxocm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NDAwNDQsImV4cCI6MjA3NTExNjA0NH0.vdWw_vFnECZ9E0hLcP_2ZyUorbouuXWOhFhPElvTXUU
+
+
 ## Overview
 
 This is a starter kit for building an AI-powered math problem generator application. The goal is to create a standalone prototype that uses AI to generate math word problems suitable for Primary 5 students, saves the problems and user submissions to a database, and provides personalized feedback.
